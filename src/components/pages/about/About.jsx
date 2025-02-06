@@ -14,7 +14,7 @@ const About = () => {
       ${theme === "dark" ? "text-zinc-100" : "text-slate-900"}`}
     >
       <div className="container mx-auto px-4 relative z-10 w-full max-w-6xl">
-        <div className="mb-4 p-4 rounded-3xl backdrop-blur-lg">
+        <div className=" p-4 rounded-3xl backdrop-blur-lg">
           <div className="flex items-center justify-center space-x-4 mb-2">
             <Rocket className={`w-10 h-10 animate-bounce ${theme === "dark" ? "text-zinc-400" : "text-slate-600"}`} />
             <h2 className="text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-800 via-slate-600 to-slate-900 dark:from-zinc-100 dark:via-zinc-300 dark:to-zinc-100">

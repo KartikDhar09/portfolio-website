@@ -139,3 +139,10 @@
     opacity: 1;
   }
 }
+@keyframes tilt {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+}
+.icon-tilt {
+  animation: tilt 3s ease-in-out infinite;
+}
