@@ -1,10 +1,9 @@
-// src/components/Background.jsx
 import React, { useMemo } from 'react';
 import { useTheme } from '../context/ThemeContext.jsx';
 
 const Background = () => {
   const { theme } = useTheme();
-  
+
   // Generate random color combinations for light and dark themes
   const colorPalettes = useMemo(() => {
     const lightPalette = [
@@ -15,7 +14,7 @@ const Background = () => {
       'rgba(251, 146, 60, 0.15)',  // orange
       'rgba(244, 114, 182, 0.15)', // pink
     ];
-    
+
     const darkPalette = [
       'rgba(30, 64, 175, 0.15)',   // dark blue
       'rgba(109, 40, 217, 0.15)',  // dark purple
@@ -24,26 +23,42 @@ const Background = () => {
       'rgba(154, 52, 18, 0.15)',   // dark orange
       'rgba(157, 23, 77, 0.15)',   // dark pink
     ];
-    
+
     return theme === 'dark' ? darkPalette : lightPalette;
   }, [theme]);
 
+  // Get number of shapes based on screen size
+  const getTotalShapes = () => {
+    if (window.innerWidth <= 640) return 10; // Mobile
+    if (window.innerWidth <= 768) return 20; // Tablet
+    return 30; // Desktop
+  };
+
+  // Get shape size based on screen size
+  const getShapeSize = () => {
+    if (window.innerWidth <= 640) return () => Math.random() * 200 + 50; // Smaller shapes on mobile
+    if (window.innerWidth <= 768) return () => Math.random() * 300 + 75; // Medium shapes on tablet
+    return () => Math.random() * 400 + 100; // Larger shapes on desktop
+  };
+
   // Generate shapes with different animations
   const shapes = useMemo(() => {
-    const totalShapes = 30;
+    const totalShapes = getTotalShapes();
+    const sizeGenerator = getShapeSize();
+
     return Array.from({ length: totalShapes }).map((_, i) => {
-      const size = Math.random() * 400 + 100; // Larger shapes
+      const size = sizeGenerator();
       const colorIndex = Math.floor(Math.random() * colorPalettes.length);
-      
+
       // Different animation patterns
       const animations = [
-        `float-linear ${20 + Math.random() * 20}s infinite linear`,
-        `float-bounce ${25 + Math.random() * 20}s infinite ease-in-out`,
-        `float-circular ${30 + Math.random() * 20}s infinite ease-in-out`
+        `float-linear ${window.innerWidth <= 640 ? 15 : 20 + Math.random() * 20}s infinite linear`,
+        `float-bounce ${window.innerWidth <= 640 ? 20 : 25 + Math.random() * 20}s infinite ease-in-out`,
+        `float-circular ${window.innerWidth <= 640 ? 25 : 30 + Math.random() * 20}s infinite ease-in-out`
       ];
-      
+
       const animationIndex = Math.floor(Math.random() * animations.length);
-      
+
       return {
         size,
         color: colorPalettes[colorIndex],
@@ -51,7 +66,7 @@ const Background = () => {
         top: `${Math.random() * 100}%`,
         animation: animations[animationIndex],
         delay: `-${Math.random() * 30}s`,
-        blur: Math.random() > 0.5,
+        blur: Math.random() > (window.innerWidth <= 640 ? 0.7 : 0.5), // Less blur on mobile for performance
       };
     });
   }, [colorPalettes]);
@@ -62,8 +77,9 @@ const Background = () => {
         {shapes.map((shape, i) => (
           <div
             key={i}
-            className={`absolute rounded-full mix-blend-multiply dark:mix-blend-screen transition-colors duration-700
-              ${shape.blur ? 'backdrop-blur-3xl' : ''}`}
+            className={`absolute rounded-full transition-colors duration-700
+              ${window.innerWidth <= 640 ? 'mix-blend-normal' : 'mix-blend-multiply dark:mix-blend-screen'}
+              ${shape.blur ? (window.innerWidth <= 640 ? 'backdrop-blur-xl' : 'backdrop-blur-3xl') : ''}`}
             style={{
               width: `${shape.size}px`,
               height: `${shape.size}px`,
@@ -72,6 +88,7 @@ const Background = () => {
               background: shape.color,
               animation: shape.animation,
               animationDelay: shape.delay,
+              opacity: window.innerWidth <= 640 ? 0.7 : 1, // Reduce opacity on mobile for better performance
             }}
           />
         ))}

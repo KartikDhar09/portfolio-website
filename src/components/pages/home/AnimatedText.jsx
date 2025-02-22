@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 
- const AnimatedLetter = ({ children }) => {
+const AnimatedLetter = ({ children }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   
   useEffect(() => {
     const animationCycle = () => {
-      const randomX = (Math.random() - 0.5) * 100;
-      const randomY = (Math.random() - 0.5) * 100;
+      // Scale animation distance based on viewport width
+      const baseDistance = Math.min(window.innerWidth / 10, 100);
+      const randomX = (Math.random() - 0.5) * baseDistance;
+      const randomY = (Math.random() - 0.5) * baseDistance;
       setPosition({ x: randomX, y: randomY });
 
       setTimeout(() => {
@@ -26,7 +28,6 @@ import React, { useState, useEffect } from "react";
       className="inline-block transition-all duration-500"
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
-       
       }}
     >
       {children === ' ' ? '\u00A0' : children}
@@ -35,9 +36,9 @@ import React, { useState, useEffect } from "react";
 };
 
 export const AnimatedText = ({ text }) => (
-    <div className="flex">
-      {text.split('').map((letter, index) => (
-        <AnimatedLetter key={index}>{letter}</AnimatedLetter>
-      ))}
-    </div>
-  );
+  <div className="flex flex-wrap justify-center">
+    {text.split('').map((letter, index) => (
+      <AnimatedLetter key={index}>{letter}</AnimatedLetter>
+    ))}
+  </div>
+);

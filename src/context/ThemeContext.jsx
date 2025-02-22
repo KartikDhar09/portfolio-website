@@ -1,12 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Create the ThemeContext with a simpler initial structure
+//  ThemeContext with a simpler initial structure
 const ThemeContext = createContext({
   theme: 'light',
   toggleTheme: () => {}
 });
 
-// Theme Provider Component
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     // Check local storage first
@@ -23,7 +22,6 @@ export const ThemeProvider = ({ children }) => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Toggle theme between light and dark
   const toggleTheme = () => {
     setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
   };
@@ -35,7 +33,6 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use theme context
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {

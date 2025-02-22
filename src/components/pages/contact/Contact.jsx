@@ -1,90 +1,132 @@
 import React, { useState } from 'react';
+import { useTheme } from '../../../context/ThemeContext.jsx';
+import emailjs from '@emailjs/browser';
+import ContactForm from './ContactForm.jsx';
+import ContactAlert from './ContactAlert.jsx';
+import { Mail } from 'lucide-react';
 
-const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
+export const Contact = () => {
+  const { theme } = useTheme();
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const handleSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const templateParams = {
+        from_name: data.name.trim(),
+        from_email: data.email.trim(),
+        message: data.message.trim(),
+      };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Implement form submission logic here
-    console.log('Form submitted:', formData);
-    alert('Thank you for your message!');
+      await emailjs.send(
+        import.meta.env.VITE_SERVICE_ID,
+        import.meta.env.VITE_TEMPLATE_ID,
+        templateParams,
+        import.meta.env.VITE_PUBLIC_KEY
+      );
+
+      setAlert({
+        show: true,
+        type: 'success',
+        message: 'Thank you for your message! I will get back to you soon.'
+      });
+
+      setTimeout(() => {
+        setAlert({ show: false, type: '', message: '' });
+      }, 5000);
+
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setAlert({
+        show: true,
+        type: 'error',
+        message: 'Failed to send message. Please check your connection and try again.'
+      });
+
+      setTimeout(() => {
+        setAlert({ show: false, type: '', message: '' });
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-8">Contact Me</h2>
-        <form 
-          onSubmit={handleSubmit} 
-          className="bg-white p-8 rounded-lg shadow-md"
-        >
-          <div className="mb-4">
-            <label 
-              htmlFor="name" 
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <div
+      className={`
+        ${theme === 'dark' ? 'text-zinc-100' : 'text-slate-900'}
+        min-h-[calc(100dvh-64px)] md:min-h-[calc(100dvh-80px)]
+        bg-transparent
+        transition-all
+        duration-500
+        flex
+        flex-col
+        items-center
+        py-4
+          pb-20 // Add padding to the bottom to account for the navbar height
+      `}
+    >
+      <div className="container mx-auto px-4 flex flex-col h-full w-full max-w-7xl">
+        <div className={`
+          rounded-xl sm:rounded-3xl
+          bg-transparent backdrop-blur-0
+          p-2 md:p-4 lg:p-6
+          flex
+          flex-col
+          h-full
+          w-full
+        `}>
+          {/* Header Section */}
+          <div className="text-center mb-8 flex items-center justify-center space-x-2">
+            <h2 className={`
+              text-3xl md:text-4xl lg:text-5xl
+              p-2
+              font-black
+              bg-clip-text
+              text-transparent
+              bg-gradient-to-r
+              from-slate-600
+              via-slate-700
+              to-zinc-800
+              dark:from-slate-300
+              dark:via-zinc-300
+              dark:to-slate-400
+            `}>
+              Get in Touch
+            </h2>
+            <Mail
+              className={`
+                w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10
+                ${theme === 'dark' ? 'text-zinc-400' : 'text-slate-600'}
+              `}
+              strokeWidth={1.5}
             />
           </div>
-          <div className="mb-4">
-            <label 
-              htmlFor="email" 
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <div className="p-1 sm:p-2 rounded-lg sm:rounded-2xl backdrop-blur-lg border border-transparent mb-8">
+            <p className={`
+              text-sm md:text-base lg:text-lg
+              leading-relaxed
+              tracking-wide
+              text-center
+              font-medium
+            `}>
+              Have a question? I'd love to hear from you.
+            </p>
+          </div>
+
+          {/* Form Section */}
+          <div className="w-full max-w-lg p-8 mx-auto overflow-y-auto">
+            <ContactAlert
+              {...alert}
+              onClose={() => setAlert({ show: false, type: '', message: '' })}
+            />
+            <ContactForm
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
             />
           </div>
-          <div className="mb-6">
-            <label 
-              htmlFor="message" 
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Message
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-              rows="4"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
-          >
-            Send Message
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
