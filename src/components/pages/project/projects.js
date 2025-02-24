@@ -8,7 +8,7 @@ export const projects = [
     description: `Modern task management web application using React, Redux, and TailwindCSS with features like
 authentication, dashboard analytics, and real-time task tracking integrated with Appwrite backend services.`,
     githubLink: "https://github.com/KartikDhar09/task-management-dashboard",
-    liveLink: "task-management-dashboard-amber-six.vercel.app",
+    liveLink: "https://task-management-dashboard-amber-six.vercel.app",
    technologies: ['React', 'Redux', 'Redux Thunk', 'React Context API', 'Tailwind CSS', 'Recharts',
     'Appwrite', 'Git', 'Github', 'Responsive Design']
 
