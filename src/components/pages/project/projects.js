@@ -32,7 +32,7 @@ export const projects = [
     name: "portfolio-website",
     image: portfolio,
     githubLink: "https://github.com/KartikDhar09/portfolio-website",
-    technologies: [ 'React', 'Emailjs' ,  'Tailwind CSS', 'Responsive Design', 'Shadcn/ui', 'Git', 'Github']
+    technologies: [ 'React', 'Emailjs' ,  'Tailwind CSS', 'Responsive Design','React Context API',' React Router', 'React Hook Form', 'Shadcn/ui', 'Git', 'Github']
 
   },
 ];
