@@ -1,104 +1,127 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip";
-import { navItems } from './navItems';
+import React, { useState, useMemo, useCallback } from 'react';
+import { NavLink } from 'react-router-dom';
+import { Menu } from 'lucide-react';
+import { navItems } from './navItems.js';
 
-const Navbar = () => {
+const NavItem = ({ item, isExpanded, onClick }) => {
+  const baseIconClasses = "w-4 h-4 transition-all duration-300 group-hover:scale-110";
+  const baseLinkClasses = "group transition-all duration-300 hover:scale-105 whitespace-nowrap";
+  
+  const getMobileClasses = (isActive) => `
+    flex flex-col items-center p-2 rounded-lg ${baseLinkClasses}
+    ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'}
+  `;
+  
+  const getDesktopClasses = (isActive) => `
+    flex flex-row items-center space-x-2 p-1.5 rounded-lg ${baseLinkClasses}
+    ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'}
+  `;
+
   return (
-    <TooltipProvider delayDuration={200}>
-      <nav className={`
-        fixed bottom-0 md:bottom-4 left-1/2 md:left-1/2 -translate-x-1/2 md:-translate-x-1/2
-        w-full max-w-md
-        bg-transparent backdrop-blur-xl rounded-t-2xl
-        border border-gray-200/50 dark:border-gray-700/50
-        z-40 flex flex-row justify-between items-center
-        transition-all duration-500
-        shadow-lg dark:shadow-gray-950/50
-        p-2 md:p-4
-      `}>
-        <div className={`
-          flex  justify-between w-full
-        `}>
-          <Link
-            to="/"
+    <NavLink
+      to={item.path}
+      onClick={onClick}
+      className={({ isActive }) => 
+        isExpanded ? getMobileClasses(isActive) : getDesktopClasses(isActive)
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <div className="relative w-6 h-6 flex items-center justify-center">
+            <item.icon
+              className={`${baseIconClasses} ${
+                isActive 
+                  ? 'text-blue-600 dark:text-blue-400 scale-110'
+                  : 'text-gray-600 dark:text-gray-300'
+              }`}
+            />
+          </div>
+          <span
             className={`
-              text-center group relative
-              hover:scale-110 transition-all duration-300
+              ${isExpanded ? 'text-xs' : 'text-sm'} 
+              font-medium transition-colors duration-300
+              ${isActive 
+                ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                : 'text-gray-600 dark:text-gray-300'
+              }
             `}
           >
-            <div className={`
-              w-12 h-12 bg-gradient-to-r from-zinc-600 to-slate-700 dark:from-zinc-300 dark:to-slate-400
-              rounded-xl flex items-center justify-center shadow-lg border border-gray-200/50
-              group-hover:shadow-2xl group-hover:shadow-zinc-500/25 dark:group-hover:shadow-zinc-400/25
-              transition-all duration-300 relative overflow-hidden
-            `}>
-              <span className={`
-                text-xl font-bold text-white dark:text-zinc-800
-                group-hover:scale-110 transition-all duration-300
-                relative z-10
-              `}>
-                KD
-              </span>
-            </div>
-          </Link>
+            {item.label}
+          </span>
+        </>
+      )}
+    </NavLink>
+  );
+};
 
-          <div className={`
-            flex space-x-2 md:space-x-4
-          `}>
-            {navItems.map((item) => (
-              <Tooltip key={item.path}>
-                <TooltipTrigger asChild>
-                  <NavLink
-                    to={item.path}
-                    className={`
-                      group flex items-center justify-center
-                      p-2 rounded-xl transition-all duration-300
-                      hover:scale-110 overflow-hidden
-                    `}
-                  >
-                    {({ isActive }) => (
-                      <div className={`
-                        relative w-8 h-8 flex items-center justify-center
-                      `}>
-                        <item.icon
-                          className={`
-                            w-5 h-5 group-hover:scale-110
-                            ${isActive
-                              ? 'text-zinc-600 dark:text-zinc-400'
-                              : 'text-gray-600 dark:text-gray-300'
-                            }
-                          `}
-                        />
-                      </div>
-                    )}
-                  </NavLink>
-                </TooltipTrigger>
-                <TooltipContent
-                  side={"top"}
-                  className={`
-                    bg-gradient-to-br from-white/95 to-gray-50/95
-                    dark:from-gray-800/95 dark:to-gray-900/95
-                    border border-gray-200/50 dark:border-gray-700/50
-                    shadow-xl rounded-xl px-4 py-2
-                    font-semibold tracking-wide
-                    backdrop-blur-md
-                    text-zinc-600 dark:text-zinc-400
-                    text-sm
-                  `}
-                >
-                  <p className="drop-shadow-sm">{item.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
+export const Navbar = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleExpand = useCallback(() => {
+    setIsExpanded(true);
+  }, []);
+
+  const handleCollapse = useCallback(() => {
+    setIsExpanded(false);
+  }, []);
+
+  const navClasses = useMemo(() => `
+    fixed transition-all duration-300 ease-in-out z-40
+    md:bottom-2 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl md:rounded-xl
+    ${isExpanded
+      ? 'bottom-0 left-1/2 -translate-x-1/2 w-full rounded-t-xl'
+      : 'bottom-4 right-4 w-auto rounded-full'
+    }
+    backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50
+    shadow-lg dark:shadow-gray-950/50
+  `, [isExpanded]);
+
+  const memoizedNavItems = useMemo(() => navItems.map(item => (
+    <NavItem
+      key={item.path}
+      item={item}
+      isExpanded={isExpanded}
+      onClick={handleCollapse}
+    />
+  )), [isExpanded, handleCollapse]);
+
+  return (
+    <>
+      <nav className={navClasses}>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex justify-center w-full px-3 py-2">
+          <div className="flex space-x-6 lg:space-x-8 flex-wrap justify-center">
+            {memoizedNavItems}
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden">
+          {isExpanded ? (
+            <div className="flex justify-center w-full px-3 py-0">
+              <div className="flex space-x-4 flex-wrap justify-center">
+                {memoizedNavItems}
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={handleExpand}
+              className="p-3 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          )}
+        </div>
       </nav>
-    </TooltipProvider>
+
+      {/* Overlay */}
+      {isExpanded && (
+        <div
+          className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm z-30 transition-opacity duration-300 md:hidden"
+          onClick={handleCollapse}
+        />
+      )}
+    </>
   );
 };
 
