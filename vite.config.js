@@ -9,5 +9,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+<<<<<<< HEAD
 
 })
+=======
+})
+>>>>>>> 5d027eb6f1fbaa6eb8052965bbbf241d3ea89c06
