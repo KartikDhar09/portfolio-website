@@ -33,8 +33,8 @@ const DownloadButton = memo(({ onClick }) => (
 
 const handleDownload = () => {
   const link = document.createElement('a');
-  link.href = '/resume.pdf';
-  link.download = 'Kartik_Dhar_Resume.pdf';
+  link.href = '/kartikdhar_frontend_resume.pdf';
+  link.download = 'kartikdhar_frontend_resume.pdf';
   link.click();
 };
 
